@@ -1,5 +1,6 @@
 module "role_basic" {
-  source         = "github.com/JousP/terraform-aws-iam-assumeRole?ref=v1.0.0"
+  source         = "JousP/iam-assumeRole/aws"
+  version        = "1.0.1"
   name           = "basic"
   description    = "Basic role that every IAM users in this account can assume to have ReadOnly access"
   policies_count = 1

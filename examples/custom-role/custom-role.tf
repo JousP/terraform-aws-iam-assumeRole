@@ -8,13 +8,14 @@ data "aws_iam_policy_document" "s3_readonly" {
 }
 
 module "role_custom_identifier" {
-  source                = "github.com/JousP/terraform-aws-iam-assumeRole?ref=v1.0.0"
-  name                  = "custom"
-  description           = "Custom role with customization for who can assume it"
-  identifier            = "arn:aws:iam::*:root"
-  path                  = "/custom/"
-  max_session_duration  = "7200"
-  tags                  = "${map("Environment", "Test")}"
+  source               = "JousP/iam-assumeRole/aws"
+  version              = "1.0.1"
+  name                 = "custom"
+  description          = "Custom role with customization for who can assume it"
+  identifier           = "arn:aws:iam::*:root"
+  path                 = "/custom/"
+  max_session_duration = "7200"
+  tags                 = "${map("Environment", "Test")}"
 }
 
 # Generates an IAM policy document
@@ -30,7 +31,8 @@ data "aws_iam_policy_document" "role_custom_assumeRole" {
 }
 
 module "role_custom_assumeRole" {
-  source               = "github.com/JousP/terraform-aws-iam-assumeRole?ref=v1.0.0"
+  source               = "JousP/iam-assumeRole/aws"
+  version              = "1.0.1"
   name                 = "custom-assumeRole"
   description          = "Custom role with customization the assume_role policy"
   assume_role_policy   = "${data.aws_iam_policy_document.role_custom_assumeRole.json}"
