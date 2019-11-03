@@ -1,30 +1,44 @@
+## Get the current caller identity
+data "aws_caller_identity" "current" {
+}
+
 # Generates an IAM policy document
 data "aws_iam_policy_document" "s3_readonly" {
   statement {
-    actions   = [ "s3:Get*", "s3:List*" ]
+    actions   = ["s3:Get*", "s3:List*"]
     effect    = "Allow"
-    resources = [ "*" ]
+    resources = ["*"]
   }
+}
+
+# Create an IAM policy
+resource "aws_iam_policy" "policy" {
+  name        = "custom-role"
+  path        = "/"
+  description = "Policy for custom-role"
+  policy      = data.aws_iam_policy_document.s3_readonly.json
 }
 
 module "role_custom_identifier" {
   source               = "JousP/iam-assumeRole/aws"
-  version              = "1.0.1"
+  version              = "2.0.0"
   name                 = "custom"
   description          = "Custom role with customization for who can assume it"
-  identifier           = "arn:aws:iam::*:root"
+  identifier           = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
   path                 = "/custom/"
-  max_session_duration = "7200"
-  tags                 = "${map("Environment", "Test")}"
+  max_session_duration = 7200
+  tags                 = {
+    "Environment"      = "Test"
+  }
 }
 
 # Generates an IAM policy document
 data "aws_iam_policy_document" "role_custom_assumeRole" {
   statement {
-    actions       = [ "sts:AssumeRole" ]
+    actions       = ["sts:AssumeRole"]
     principals {
       type        = "Service"
-      identifiers = [ "ec2.amazonaws.com" ]
+      identifiers = ["ec2.amazonaws.com"]
     }
     effect        = "Allow"
   }
@@ -32,16 +46,19 @@ data "aws_iam_policy_document" "role_custom_assumeRole" {
 
 module "role_custom_assumeRole" {
   source               = "JousP/iam-assumeRole/aws"
-  version              = "1.0.1"
+  version              = "2.0.0"
   name                 = "custom-assumeRole"
   description          = "Custom role with customization the assume_role policy"
-  assume_role_policy   = "${data.aws_iam_policy_document.role_custom_assumeRole.json}"
+  assume_role_policy   = data.aws_iam_policy_document.role_custom_assumeRole.json
   path                 = "/custom/"
-  max_session_duration = "7200"
+  max_session_duration = 7200
   permissions_boundary = ""
   policies_count       = 1
-  policies             = ["arn:aws:iam::aws:policy/ReadOnlyAccess"]
+  policies             = [aws_iam_policy.policy.arn]
   json_policies_count  = 1
-  json_policies        = ["${data.aws_iam_policy_document.s3_readonly.json}"]
-  tags                 = "${map("Environment", "Test")}"
+  json_policies        = [data.aws_iam_policy_document.s3_readonly.json]
+  tags                 = {
+    "Environment"      = "Test"
+  }
 }
+
