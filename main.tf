@@ -52,8 +52,6 @@ resource "aws_iam_role_policy_attachment" "role" {
 resource "aws_iam_role_policy" "role" {
   for_each = toset(var.enabled ? var.json_policies : [])
   name     = "${var.name}-policy"
-  # can we remove [0] ?
   role     = aws_iam_role.role[0].name
   policy   = each.key
 }
-
