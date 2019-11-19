@@ -4,6 +4,58 @@ This example define an 2 IAM roles.
 The first has a custom identifier for the assumeRole policy which allow everyone (from every AWS account) to assume it. For that purpose no policy has been assigned to the role.  
 The second role has a full custom assum_role policy which allow the EC2 service to assume it. The role has 2 policies attached.  
 
+## Content
+[custom-role.tf](custom-role.tf)
+```
+# Generates an IAM policy document
+data "aws_iam_policy_document" "s3_readonly" {
+  statement {
+    actions   = [ "s3:Get*", "s3:List*" ]
+    effect    = "Allow"
+    resources = [ "*" ]
+  }
+}
+
+module "role_custom_identifier" {
+  source               = "JousP/iam-assumeRole/aws"
+  version              = "1.0.2"
+  name                 = "custom"
+  description          = "Custom role with customization for who can assume it"
+  identifier           = "arn:aws:iam::*:root"
+  path                 = "/custom/"
+  max_session_duration = "7200"
+  tags                 = "${map("Environment", "Test")}"
+}
+
+# Generates an IAM policy document
+data "aws_iam_policy_document" "role_custom_assumeRole" {
+  statement {
+    actions       = [ "sts:AssumeRole" ]
+    principals {
+      type        = "Service"
+      identifiers = [ "ec2.amazonaws.com" ]
+    }
+    effect        = "Allow"
+  }
+}
+
+module "role_custom_assumeRole" {
+  source               = "JousP/iam-assumeRole/aws"
+  version              = "1.0.2"
+  name                 = "custom-assumeRole"
+  description          = "Custom role with customization the assume_role policy"
+  assume_role_policy   = "${data.aws_iam_policy_document.role_custom_assumeRole.json}"
+  path                 = "/custom/"
+  max_session_duration = "7200"
+  permissions_boundary = ""
+  policies_count       = 1
+  policies             = ["arn:aws:iam::aws:policy/ReadOnlyAccess"]
+  json_policies_count  = 1
+  json_policies        = ["${data.aws_iam_policy_document.s3_readonly.json}"]
+  tags                 = "${map("Environment", "Test")}"
+}
+```
+
 ## Use the example
 Follow these instruction to use this example :  
 - Edit the `terraform.tfvars` file

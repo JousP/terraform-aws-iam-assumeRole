@@ -3,6 +3,19 @@
 This example define an IAM role named "basic".  
 Every IAM user under the account where it's being deployed can assume this role to get ReadOnly access to the AWS account.  
 
+## Content
+[basic-role.tf](basic-role.tf)
+```
+module "role_basic" {
+  source         = "JousP/iam-assumeRole/aws"
+  version        = "1.0.2"
+  name           = "basic"
+  description    = "Basic role that every IAM users in this account can assume to have ReadOnly access"
+  policies_count = 1
+  policies       = ["arn:aws:iam::aws:policy/ReadOnlyAccess"]
+}
+```
+
 ## Use the example
 Follow these instruction to use this example :  
 - Edit the `terraform.tfvars` file
