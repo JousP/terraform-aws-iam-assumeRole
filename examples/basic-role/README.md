@@ -8,7 +8,7 @@ Every IAM user under the account where it's being deployed can assume this role 
 ```
 module "role_basic" {
   source         = "JousP/iam-assumeRole/aws"
-  version        = "2.0.1"
+  version        = "2.0.2"
   name           = "basic"
   description    = "Basic role that every IAM users in this account can assume to have ReadOnly access"
   policies_count = 1

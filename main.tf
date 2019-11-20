@@ -50,8 +50,12 @@ resource "aws_iam_role_policy_attachment" "role" {
 
 # Attach provided inline policies to the role
 resource "aws_iam_role_policy" "role" {
-  for_each = toset(var.enabled ? var.json_policies : [])
-  name     = "${var.name}-policy"
-  role     = aws_iam_role.role[0].name
-  policy   = each.key
+  # The "for_each" value depends on resource attributes that cannot be determined
+  # until apply, so Terraform cannot predict how many instances will be created.
+  # for_each = toset(var.enabled ? var.json_policies : [])
+  # policy   = each.key
+  count  = var.enabled ? var.json_policies_count : 0
+  role   = aws_iam_role.role[0].name
+  name   = "${var.name}-${count.index}"
+  policy = element(var.json_policies, count.index)
 }

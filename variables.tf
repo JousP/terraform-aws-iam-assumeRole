@@ -58,6 +58,12 @@ variable "policies" {
   default     = []
 }
 
+variable "json_policies_count" {
+  description = "(Optional) Number of JSON formatted inline policies provided in the `json_policies` variable"
+  type        = number
+  default     = 0
+}
+
 variable "json_policies" {
   description = "(Optional) The JSON formatted inline policies for the role"
   type        = list(string)

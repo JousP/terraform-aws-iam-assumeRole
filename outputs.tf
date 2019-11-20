@@ -41,7 +41,7 @@ output "name" {
 
 output "name_prefix" {
   description = "(Optional, Forces new resource) Creates a unique name beginning with the specified prefix. Conflicts with name."
-  value       = "${element(concat(aws_iam_role.role.*.name_prefix, list("")), 0)}"
+  value       = element(concat(aws_iam_role.role.*.name_prefix, [""]), 0)
 }
 
 output "path" {
@@ -51,12 +51,12 @@ output "path" {
 
 output "permissions_boundary" {
   description = "(Optional) The ARN of the policy that is used to set the permissions boundary for the role."
-  value       = "${element(concat(aws_iam_role.role.*.permissions_boundary, list("")), 0)}"
+  value       = element(concat(aws_iam_role.role.*.permissions_boundary, [""]), 0)
 }
 
 output "tags" {
   description = "Key-value mapping of tags for the IAM role"
-  value       = "${element(concat(aws_iam_role.role.*.tags, list("")), 0)}"
+  value       = element(concat(aws_iam_role.role.*.tags, [""]), 0)
 }
 
 output "unique_id" {
@@ -71,5 +71,5 @@ output "policies_attachment" {
 
 output "policies" {
   description = "The role policy ID, in the form of role_name:role_policy_name."
-  value       = values(aws_iam_role_policy.role)[*]
+  value       = aws_iam_role_policy.role[*]
 }

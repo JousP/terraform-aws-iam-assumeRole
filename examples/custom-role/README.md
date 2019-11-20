@@ -5,7 +5,7 @@ The first has a custom identifier for the assumeRole policy which allow everyone
 The second role has a full custom assum_role policy which allow the EC2 service to assume it. The role has 2 policies attached.  
 
 ## Content
-[basic-policy.tf](basic-policy.tf)
+[custom-policy.tf](custom-policy.tf)
 ```
 ## Get the current caller identity
 data "aws_caller_identity" "current" {
@@ -30,7 +30,7 @@ resource "aws_iam_policy" "policy" {
 
 module "role_custom_identifier" {
   source               = "JousP/iam-assumeRole/aws"
-  version              = "2.0.1"
+  version              = "2.0.2"
   name                 = "custom"
   description          = "Custom role with customization for who can assume it"
   identifier           = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "role_custom_assumeRole" {
 
 module "role_custom_assumeRole" {
   source               = "JousP/iam-assumeRole/aws"
-  version              = "2.0.1"
+  version              = "2.0.2"
   name                 = "custom-assumeRole"
   description          = "Custom role with customization the assume_role policy"
   assume_role_policy   = data.aws_iam_policy_document.role_custom_assumeRole.json
@@ -61,6 +61,7 @@ module "role_custom_assumeRole" {
   permissions_boundary = ""
   policies_count       = 1
   policies             = [aws_iam_policy.policy.arn]
+  json_policies_count  = 1
   json_policies        = [data.aws_iam_policy_document.s3_readonly.json]
   tags                 = {
     "Environment"      = "Test"
