@@ -4,23 +4,32 @@ data "aws_caller_identity" "current" {
 
 ## local variable to define the assumeRole policy to attach to the role
 locals {
-  identifier              = var.identifier == "" ? "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" : var.identifier
-  assume_role_policy      = var.assume_role_policy == "" ? data.aws_iam_policy_document.iam_assumeRole_generic.json : var.assume_role_policy
-  assume_role_type        = var.service == "" ? "AWS" : "Service"
-  assume_role_identifiers = var.service == "" ? local.identifier : var.service
+  aws_identifier         = {
+    type                 = "AWS"
+    identifiers          = length(var.aws_identifiers) == 0 ? ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"] : var.aws_identifiers
+  }
+  service_identifier     = {
+    type                 = "Service"
+    identifiers          = var.service_identifiers
+  }
+  assume_role_policy     = var.assume_role_policy == "" ? data.aws_iam_policy_document.iam_assumeRole_generic.json : var.assume_role_policy
+  assume_role_principals = length(var.service_identifiers) == 0 ? list(local.aws_identifier) : length(var.aws_identifiers) == 0 ? list(local.service_identifier) : list(local.aws_identifier, local.service_identifier)
 }
 
 # Generates an IAM policy document
 data "aws_iam_policy_document" "iam_assumeRole_generic" {
-  policy_id       = "AssumeRole"
+  policy_id         = "AssumeRole"
   statement {
-    sid           = "AllowAssumeRole"
-    actions       = ["sts:AssumeRole"]
-    principals {
-      type        = local.assume_role_type
-      identifiers = [local.assume_role_identifiers]
+    sid             = "AllowAssumeRole"
+    actions         = ["sts:AssumeRole"]
+    dynamic "principals" {
+      for_each      = local.assume_role_principals
+      content {
+        type        = principals.value["type"]
+        identifiers = principals.value["identifiers"]
+      }
     }
-    effect        = "Allow"
+    effect          = "Allow"
   }
 }
 

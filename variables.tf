@@ -71,16 +71,16 @@ variable "json_policies" {
 }
 
 # AssumeRole Default Policy Customization
-variable "identifier" {
-  description = "(Optional) Identifier for principal. When type is \"AWS\", these are IAM user or role ARNs. When type is \"Service\", these are AWS Service roles e.g. lambda.amazonaws.com."
-  type        = string
-  default     = ""
+variable "aws_identifiers" {
+  description = "(Optional) list of Identifiers for principal of type \"AWS\", these are IAM user or role ARNs."
+  type        = list(string)
+  default     = []
 }
 
-variable "service" {
-  description = "(Optional) the AWS service FQDN for service Role"
-  type        = string
-  default     = ""
+variable "service_identifiers" {
+  description = "(Optional) list of Identifiers for principal of type \"Service\", these are AWS service eg. lambda.amazonaws.com."
+  type        = list(string)
+  default     = []
 }
 
 # Avoid resources creation

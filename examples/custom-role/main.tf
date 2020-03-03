@@ -2,6 +2,30 @@
 data "aws_caller_identity" "current" {
 }
 
+module "role_custom_identifier" {
+  source               = "JousP/iam-assumeRole/aws"
+  version              = "~> 2.1"
+  name                 = "custom"
+  description          = "Custom role with customization for who can assume it"
+  aws_identifiers      = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+  service_identifiers  = ["ec2.amazonaws.com"]
+  path                 = "/custom/"
+  max_session_duration = 7200
+}
+
+# Generates an IAM policy document
+data "aws_iam_policy_document" "role_custom_assumeRole" {
+  statement {
+    sid           = "CustomAssumeRole"
+    actions       = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+    effect        = "Allow"
+  }
+}
+
 # Generates an IAM policy document
 data "aws_iam_policy_document" "s3_readonly" {
   statement {
@@ -19,31 +43,9 @@ resource "aws_iam_policy" "policy" {
   policy      = data.aws_iam_policy_document.s3_readonly.json
 }
 
-module "role_custom_identifier" {
-  source               = "JousP/iam-assumeRole/aws"
-  version              = "2.0.2"
-  name                 = "custom"
-  description          = "Custom role with customization for who can assume it"
-  identifier           = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-  path                 = "/custom/"
-  max_session_duration = 7200
-}
-
-# Generates an IAM policy document
-data "aws_iam_policy_document" "role_custom_assumeRole" {
-  statement {
-    actions       = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-    effect        = "Allow"
-  }
-}
-
 module "role_custom_assumeRole" {
   source               = "JousP/iam-assumeRole/aws"
-  version              = "2.0.2"
+  version              = "~> 2.1"
   name                 = "custom-assumeRole"
   description          = "Custom role with customization the assume_role policy"
   assume_role_policy   = data.aws_iam_policy_document.role_custom_assumeRole.json
