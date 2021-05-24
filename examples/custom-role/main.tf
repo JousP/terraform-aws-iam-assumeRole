@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {
 
 module "role_custom_identifier" {
   source               = "JousP/iam-assumeRole/aws"
-  version              = "~> 2.1"
+  version              = "~> 3.0"
   name                 = "custom"
   description          = "Custom role with customization for who can assume it"
   aws_identifiers      = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
@@ -45,7 +45,7 @@ resource "aws_iam_policy" "policy" {
 
 module "role_custom_assumeRole" {
   source               = "JousP/iam-assumeRole/aws"
-  version              = "~> 2.1"
+  version              = "~> 3.0"
   name                 = "custom-assumeRole"
   description          = "Custom role with customization the assume_role policy"
   assume_role_policy   = data.aws_iam_policy_document.role_custom_assumeRole.json

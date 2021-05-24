@@ -13,7 +13,7 @@ locals {
     identifiers          = var.service_identifiers
   }
   assume_role_policy     = var.assume_role_policy == "" ? data.aws_iam_policy_document.iam_assumeRole_generic.json : var.assume_role_policy
-  assume_role_principals = length(var.service_identifiers) == 0 ? list(local.aws_identifier) : length(var.aws_identifiers) == 0 ? list(local.service_identifier) : list(local.aws_identifier, local.service_identifier)
+  assume_role_principals = length(var.service_identifiers) == 0 ? [local.aws_identifier] : length(var.aws_identifiers) == 0 ? [local.service_identifier] : [local.aws_identifier, local.service_identifier]
 }
 
 # Generates an IAM policy document
