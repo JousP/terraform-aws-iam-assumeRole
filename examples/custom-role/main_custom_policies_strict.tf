@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "s3_bucket2_readonly" {
 
 module "role_custom_policies_strict" {
   source              = "JousP/iam-assumeRole/aws"
-  version             = "~> 3.1"
+  version             = "~> 3.2"
   name                = "custom-policies-trict"
   description         = "Custom role with fixed and strict inline and managed policies"
   path                = "/custom/"

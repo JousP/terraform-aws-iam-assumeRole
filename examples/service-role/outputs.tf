@@ -61,3 +61,11 @@ output "ec2_role_tags_all" {
 output "ec2_role_unique_id" {
   value = module.ec2_role.unique_id
 }
+
+output "ec2_role_policies_attachment" {
+  value = module.ec2_role.policies_attachment
+}
+
+output "ec2_role_policies" {
+  value = module.ec2_role.policiesec2_role
+}

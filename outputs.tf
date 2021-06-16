@@ -78,3 +78,12 @@ output "unique_id" {
   value       = aws_iam_role.role.unique_id
 }
 
+output "policies_attachment" {
+  description = "Managed IAM Policies attached to the IAM role"
+  value       = var.policies
+}
+
+output "policies" {
+  description = "The role policy ID, in the form of role_name:role_policy_name."
+  value       = aws_iam_role_policy.role[*].id
+}

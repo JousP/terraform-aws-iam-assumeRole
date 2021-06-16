@@ -61,3 +61,11 @@ output "role_basic_tags_all" {
 output "role_basic_unique_id" {
   value = module.role_basic.unique_id
 }
+
+output "role_basic_policies_attachment" {
+  value = module.role_basic.policies_attachment
+}
+
+output "role_basic_policies" {
+  value = module.role_basic.policies
+}
