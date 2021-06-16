@@ -1,43 +1,65 @@
 # Role
-variable "name" {
-  description = "(Required) The name of the role."
-  type        = string
-}
-
-variable "description" {
-  description = "(Required) The description of the role."
-  type        = string
-}
-
 variable "assume_role_policy" {
   description = "(Optional) Specific policy to assume that role, if not whole account required."
   type        = string
-  default     = ""
+  default     = null
+}
+
+variable "description" {
+  description = "(Optional) The description of the role."
+  type        = string
+  default     = null
 }
 
 variable "force_detach_policies" {
   description = "(Optional) Specifies to force detaching any policies the role has before destroying it. Defaults to true."
-  default     = true
+  type        = bool
+  default     = null
+}
+
+variable "inline_policy" {
+  description = "(Optional) Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. Defined below. If no blocks are configured, Terraform will ignore any managing any inline policies in this resource. Configuring one empty block (i.e., inline_policy {}) will cause Terraform to remove all inline policies."
+  type = list(object({
+    name   = string
+    policy = string
+  }))
+  default = []
+}
+
+variable "managed_policy_arns" {
+  description = "(Optional) Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Terraform will ignore policy attachments to this resource. When configured, Terraform will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., managed_policy_arns = []) will cause Terraform to remove all managed policy attachments."
+  type        = list(string)
+  default     = null
+}
+
+variable "max_session_duration" {
+  description = "(Optional) The maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours."
+  type        = number
+  default     = 3600
+}
+
+variable "name" {
+  description = "(Optional) The name of the role."
+  type        = string
+  default     = null
+}
+
+variable "name_prefix" {
+  description = "(Optional, Forces new resource) Creates a unique friendly name beginning with the specified prefix. Conflicts with name."
+  type        = string
+  default     = null
 }
 
 variable "path" {
   description = "(Optional) The path to the role."
   type        = string
-  default     = "/"
-}
-
-variable "max_session_duration" {
-  description = "(Optional) The maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours."
-#  type        = string
-#  default     = "3600"
-  type        = number
-  default     = 3600
+  default     = null
 }
 
 variable "permissions_boundary" {
   description = "(Optional) The ARN of the policy that is used to set the permissions boundary for the role."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "tags" {
@@ -82,11 +104,3 @@ variable "service_identifiers" {
   type        = list(string)
   default     = []
 }
-
-# Avoid resources creation
-variable "enabled" {
-  description = "(Optional) Whether resources have to be deployed"
-  type        = bool
-  default     = true
-}
-
