@@ -32,7 +32,7 @@ resource "aws_iam_policy" "s3_all_readonly" {
 
 module "role_custom_policies" {
   source              = "JousP/iam-assumeRole/aws"
-  version             = "~> 3.2"
+  version             = "~> 3.3"
   name                = "custom-policies"
   description         = "Custom role with fixed inline and managed policies"
   path                = "/custom/"
